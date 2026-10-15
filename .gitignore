@@ -1,0 +1,56 @@
+# Python environments and caches
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Local configuration and secrets
+.env
+.env.*
+*.secret
+*.key
+*.pem
+
+# Android packages downloaded for local execution
+apps/*.apk
+apps/**/*.apk
+demo_app/*.apk
+demo_app/**/*.apk
+
+# Generated reports and runtime evidence
+reports/*.html
+reports/*.xml
+reports/*.json
+!reports/.gitkeep
+artifacts/*
+!artifacts/.gitkeep
+screenshots/
+logs/
+
+# IDE and operating-system files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Keep the inspection documentation directory available for future notes.
+!docs/app_inspection/
+!docs/app_inspection/.gitkeep
+!apps/.gitkeep
+!tests/.gitkeep
+!testdata/.gitkeep
+!scripts/.gitkeep
+!.github/workflows/.gitkeep
+
+# Generated test reports and runtime diagnostics
+/reports/
+/artifacts/
+
+# Generated Appium UI inspection captures
+/docs/app_inspection/*.png
+/docs/app_inspection/*.xml
