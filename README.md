@@ -40,6 +40,8 @@ reports/      Generated HTML reports (ignored by Git)
 artifacts/    Runtime screenshots, logs, and CI evidence (ignored by Git)
 ```
 
+
+
 ## Local Windows setup
 
 The beginner-friendly setup notes are in [docs/environment_setup.md](docs/environment_setup.md). The pinned dependencies, APK validation helper, driver configuration, page objects, fixtures, and automated tests are implemented; follow the guide to run them locally.
@@ -74,3 +76,10 @@ The framework captures failure screenshots, Appium page-source XML, bounded Logc
 - [Test plan](docs/test_plan.md)
 - [50-case test inventory](docs/test_cases.md)
 - [Defect template](docs/defect_template.md)
+
+## License
+
+Qualivanta's original automation framework, test code, scripts, and documentation are released under the MIT License. See [LICENSE](https://chatgpt.com/c/LICENSE) for the full license text.
+
+The Sauce Labs My Demo App for Android is a third-party application used for testing and is not covered by Qualivanta's MIT License. See [THIRD-PARTY-NOTICES.md](http://THIRD-PARTY-NOTICES.md) for attribution and additional information.
+
