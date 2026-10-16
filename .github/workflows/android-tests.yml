@@ -54,7 +54,7 @@ jobs:
       - name: Prepare artifact directories
         run: mkdir -p artifacts reports
 
-      - name: Enable KVM access for Android emulator
+      - name: Enable KVM access for Android CI
         run: |
           if [ ! -e /dev/kvm ]; then
             echo "::error::/dev/kvm is not available on this runner."
@@ -81,63 +81,7 @@ jobs:
           emulator-options: -no-window -no-audio -no-boot-anim -no-snapshot
           disable-animations: true
           emulator-boot-timeout: 600
-          script: |
-            set -eu
-
-            mkdir -p artifacts reports
-
-            adb wait-for-device
-
-            BOOT_STATUS=""
-
-            for attempt in $(seq 1 60); do
-              BOOT_STATUS="$(adb -s "$ANDROID_UDID" shell getprop sys.boot_completed 2>/dev/null || true)"
-              BOOT_STATUS="$(printf '%s' "$BOOT_STATUS" | tr -d '\r')"
-
-              if [ "$BOOT_STATUS" = "1" ]; then
-                break
-              fi
-
-              sleep 2
-            done
-
-            if [ "$BOOT_STATUS" != "1" ]; then
-              echo "Android did not complete boot within the expected time."
-              adb devices -l || true
-              exit 1
-            fi
-
-            appium \
-              --address 127.0.0.1 \
-              --port 4723 \
-              > artifacts/appium.log 2>&1 &
-
-            APPIUM_PID=$!
-            trap 'kill "$APPIUM_PID" 2>/dev/null || true' EXIT
-
-            APPIUM_READY="false"
-
-            for attempt in $(seq 1 60); do
-              if curl --fail --silent \
-                http://127.0.0.1:4723/status \
-                > artifacts/appium-status.json; then
-                APPIUM_READY="true"
-                break
-              fi
-
-              sleep 2
-            done
-
-            if [ "$APPIUM_READY" != "true" ]; then
-              echo "Appium did not become ready."
-              cat artifacts/appium.log || true
-              exit 1
-            fi
-
-            python -m pytest -q \
-              --html=reports/pytest.html \
-              --self-contained-html \
-              --junitxml=reports/junit.xml
+          script: bash scripts/run_android_ci.sh
 
       - name: Upload test reports
         if: always()
