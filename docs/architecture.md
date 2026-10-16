@@ -15,7 +15,7 @@ Qualivanta is a Python/Appium test framework organized around a Page Object Mode
 | `reports/` and `artifacts/` | Receive generated HTML/XML reports, screenshots, page-source XML, bounded Logcat excerpts, and CI evidence. |
 | `.github/workflows/` | Provision an API 35 Android emulator, start Appium, run pytest, and upload reports/artifacts. |
 
-The planned execution flow is: pytest selects a scenario, fixtures prepare an isolated Appium session, a test drives page objects, utilities capture evidence on failure, and reporting/CI publishes the result. Actual selectors and supported behavior must be established by inspecting the official demo APK before implementation.
+The execution flow is: pytest selects a scenario, fixtures prepare an isolated Appium session, a test drives page objects, utilities capture evidence on failure, and reporting/CI publishes the result. Selectors and supported behavior are established by inspecting the official demo APK before implementation.
 
 ## Design boundaries
 

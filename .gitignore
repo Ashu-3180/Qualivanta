@@ -29,6 +29,8 @@ reports/*.json
 artifacts/*
 !artifacts/.gitkeep
 screenshots/
+!docs/screenshots/
+!docs/screenshots/*.png
 logs/
 
 # IDE and operating-system files

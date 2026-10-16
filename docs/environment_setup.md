@@ -16,7 +16,7 @@ This is a beginner-friendly guide for local execution. It does not change machin
 
 Use the installed Java and SDK locations above. Do not modify machine or user environment variables as part of this project setup.
 
-## Planned PowerShell sequence
+## PowerShell sequence
 
 From the repository root:
 
@@ -63,4 +63,4 @@ For report commands, feature-group commands, failure artifacts, and CI details, 
 - **Unreachable Appium:** start Appium and verify `http://127.0.0.1:4723/status` is reachable. The snapshot utility reports a clear error without starting or stopping Appium.
 - **CI/API differences:** set `ANDROID_UDID`, `APPIUM_PLATFORM_VERSION=35`, `APP_PATH`, `ANDROID_HOME`, and `APPIUM_SERVER_URL` in CI; no source-code path change is required.
 
-The CI plan is separate: GitHub Actions will use an Android API 35 emulator and Java 27.
+GitHub Actions uses an Android API 35 emulator with Java 27. In Android terminology, API 35 is the Android 15 platform configuration; the local emulator remains API 37.
