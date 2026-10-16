@@ -1,3 +1,4 @@
+
 name: Android tests
 
 on:
@@ -12,6 +13,7 @@ jobs:
   android-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     env:
       ANDROID_UDID: emulator-5554
       APPIUM_PLATFORM_VERSION: "15"
@@ -50,6 +52,21 @@ jobs:
       - name: Prepare APK
         run: python scripts/download_demo_app.py
 
+      - name: Enable KVM access for Android emulator
+        run: |
+          if [ ! -e /dev/kvm ]; then
+            echo "::error::/dev/kvm is not available on this runner."
+            exit 1
+          fi
+
+          sudo chmod 666 /dev/kvm
+          ls -l /dev/kvm
+
+          if [ ! -r /dev/kvm ] || [ ! -w /dev/kvm ]; then
+            echo "::error::The runner cannot read and write /dev/kvm."
+            exit 1
+          fi
+
       - name: Run Android emulator and tests
         uses: reactivecircus/android-emulator-runner@v2
         env:
@@ -61,28 +78,56 @@ jobs:
           profile: pixel_7_pro
           emulator-options: -no-window -no-audio -no-boot-anim -no-snapshot
           disable-animations: true
+          emulator-boot-timeout: 600
           script: |
             set -euo pipefail
+
             mkdir -p artifacts reports
+
             adb wait-for-device
+
             for attempt in $(seq 1 60); do
-              if [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" = "1" ]; then
+              if [ "$(adb shell getprop sys.boot_completed | tr -d '\r' 2>/dev/null)" = "1" ]; then
                 break
               fi
               sleep 2
             done
-            test "$(adb shell getprop sys.boot_completed | tr -d '\r')" = "1"
-            appium --address 127.0.0.1 --port 4723 > artifacts/appium.log 2>&1 &
+
+            if [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" != "1" ]; then
+              echo "Android did not complete boot within the expected time."
+              adb devices -l || true
+              exit 1
+            fi
+
+            appium \
+              --address 127.0.0.1 \
+              --port 4723 \
+              > artifacts/appium.log 2>&1 &
+
             APPIUM_PID=$!
             trap 'kill "$APPIUM_PID" 2>/dev/null || true' EXIT
+
             for attempt in $(seq 1 60); do
-              if curl --fail --silent http://127.0.0.1:4723/status > artifacts/appium-status.json; then
+              if curl --fail --silent \
+                http://127.0.0.1:4723/status \
+                > artifacts/appium-status.json; then
                 break
               fi
               sleep 2
             done
-            curl --fail --silent http://127.0.0.1:4723/status > artifacts/appium-status.json
-            python -m pytest -q --html=reports/pytest.html --self-contained-html --junitxml=reports/junit.xml
+
+            if ! curl --fail --silent \
+              http://127.0.0.1:4723/status \
+              > artifacts/appium-status.json; then
+              echo "Appium did not become ready."
+              cat artifacts/appium.log || true
+              exit 1
+            fi
+
+            python -m pytest -q \
+              --html=reports/pytest.html \
+              --self-contained-html \
+              --junitxml=reports/junit.xml
 
       - name: Upload test reports
         if: always()
